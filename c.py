@@ -10,7 +10,6 @@ class WebSocketThread(threading.Thread):
     def __init__(self, name):
         threading.Thread.__init__(self)
         self.name = name
-        self.USERS = set()
         print("Start thread", self.name)
 
     # overide run method
@@ -30,35 +29,46 @@ class WebSocketThread(threading.Thread):
             print("Received and echoing message: " + message, flush=True)
             await websocket.send(message)
 
-    def stop(self):
-        # terminate the loop
-        asyncio.get_event_loop().stop()
+    # def stop(self):
+    #     # terminate the loop
+    #     asyncio.get_event_loop().stop()
+
+    def raise_exception(self):
+        thread_id = self.get_id()
+        res = ctypes.pythonapi.PyThreadState_SetAsyncExc(thread_id,
+                                                         ctypes.py_object(SystemExit))
+        if res > 1:
+            ctypes.pythonapi.PyThreadState_SetAsyncExc(thread_id, 0)
+            print('Exception raise failure')
 
 def the_gui():
 
     sg.theme('Black')  # give our window a spiffy set of colors
 
-    layout = [[sg.Text('Your output will go here', size=(40, 1))],
+    layout = [[sg.Text('Output Text', size=(40, 1))],
                       [sg.Output(size=(110, 20), font=('Helvetica 10')),
                        sg.Button('Start', button_color=(sg.BLUES[0]), bind_return_key=True),
                        sg.Button('Stop', button_color=(sg.GREENS[0]))]]
 
-    window = sg.Window('', layout, font=('Helvetica', ' 13'), default_button_element_size=(8, 2),
+    window = sg.Window("Websocket Server", layout, font=('Helvetica', ' 13'), default_button_element_size=(8, 2),
                                use_default_focus=False, finalize=True)
 
     threadWebSocket = WebSocketThread("websocket_server")
-    threadWebSocket.start()
 
     while True:     # The Event Loop
             event, value = window.read()
             if event in (sg.WIN_CLOSED, 'Stop'):            # quit if exit button or X
                 break
             if event == 'Start':
-                print("done")
+                threadWebSocket.start()
+                print("Server started")
 
 
     window.close()
-    threadWebSocket.stop()
+    threadWebSocket.raise_exception()
+    threadWebSocket.join(timuot=1)
+    loop = asyncio.get_event_loop()
+    loop.close()
 
 
 
