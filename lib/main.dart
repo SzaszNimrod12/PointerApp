@@ -45,6 +45,9 @@ class _MyHomePageState extends State<MyHomePage> {
   List<double>? _magnetometerValues;
   final _streamSubscriptions = <StreamSubscription<dynamic>>[];
   var mag1;
+  var isPressed;
+
+
 
   @override
   Widget build(BuildContext context) {
@@ -57,7 +60,7 @@ class _MyHomePageState extends State<MyHomePage> {
         .toList();
     final magnetometer =
         _magnetometerValues?.map((double v) => v.toStringAsFixed(1)).toList();
-    mag1=_magnetometerValues;
+    mag1 = _magnetometerValues;
 
     return Scaffold(
       appBar: AppBar(
@@ -117,44 +120,46 @@ class _MyHomePageState extends State<MyHomePage> {
                 ],
               ),
             ),
+            GestureDetector(
+              onLongPressStart: (_) async {
+                isPressed = true;
+                do {
+                  //print('long pressing');
+                  _sendMessage();
+                  //testeles milyat 1 masodperc kesleltetes van de lehet ez sokall kisebb.
+                  await Future.delayed(Duration(seconds: 1));
+                } while (isPressed);
+              },
+              child: Container(
+                color: Colors.blueAccent,
+                padding: const EdgeInsets.all(12),
+                child: const Text("Send"),
+              ),
+              onLongPressEnd: (_) => setState(() => isPressed = false),
+            ),
           ],
         ),
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed:() {
-            _sendMessage();
-        },
-        tooltip: 'Send message',
-        child: const Icon(Icons.send),
 
-      ),
       // This trailing comma makes auto-formatting nicer for build methods.
     );
   }
-
 
   @override
   void initState() {
     lisenSensorData();
     super.initState();
-
   }
 
   void _sendMessage() {
-    // if (_controller.text.isNotEmpty) {
-    //   _channel.sink.add(_controller.text);
-      _channel.sink.add(mag1.toString());
-      // setState(() {
-      //
-      // });
-
+    _channel.sink.add(mag1.toString());
   }
 
 
   void lisenSensorData() {
     _streamSubscriptions.add(
       accelerometerEvents.listen(
-            (AccelerometerEvent event) {
+        (AccelerometerEvent event) {
           setState(() {
             _accelerometerValues = <double>[event.x, event.y, event.z];
           });
@@ -163,17 +168,16 @@ class _MyHomePageState extends State<MyHomePage> {
     );
     _streamSubscriptions.add(
       gyroscopeEvents.listen(
-            (GyroscopeEvent event) {
+        (GyroscopeEvent event) {
           setState(() {
             _gyroscopeValues = <double>[event.x, event.y, event.z];
-
           });
         },
       ),
     );
     _streamSubscriptions.add(
       userAccelerometerEvents.listen(
-            (UserAccelerometerEvent event) {
+        (UserAccelerometerEvent event) {
           setState(() {
             _userAccelerometerValues = <double>[event.x, event.y, event.z];
           });
@@ -182,7 +186,7 @@ class _MyHomePageState extends State<MyHomePage> {
     );
     _streamSubscriptions.add(
       magnetometerEvents.listen(
-            (MagnetometerEvent event) {
+        (MagnetometerEvent event) {
           setState(() {
             _magnetometerValues = <double>[event.x, event.y, event.z];
           });
