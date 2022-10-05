@@ -7,6 +7,7 @@ from win32api import GetSystemMetrics
 import PySimpleGUI as sg
 import websockets
 
+msgstop=False
 
 def run():
     # must set a new loop for asyncio
@@ -27,19 +28,28 @@ async def listen(websocket):
 
 
 def mover(message):
-    floatMessage=float(message)
-    #print("Width =", GetSystemMetrics(0))
-    #print("Height =", GetSystemMetrics(1))
+    if message!="stop":
+        floatMessage=float(message)
+        #print("Width =", GetSystemMetrics(0))
+        #print("Height =", GetSystemMetrics(1))
 
-    #move mouse right down -left -up
-    #move mouse right
-    mouse.move((GetSystemMetrics(1)/2)+floatMessage, (GetSystemMetrics(2)/2), absolute=False, duration=0.1)
+        #move mouse right down -left -up
+        #move mouse right
+        mouse.move((GetSystemMetrics(1)/2)+floatMessage, (GetSystemMetrics(2)/2), absolute=False, duration=0.1)
 
-    #move mouse left
-    #mouse.move(-((GetSystemMetrics(1) / 2) + floatMessage), (GetSystemMetrics(2) / 2), absolute=False,duration=0.1)
+        #move mouse left
+        #mouse.move(-((GetSystemMetrics(1) / 2) + floatMessage), (GetSystemMetrics(2) / 2), absolute=False,duration=0.1)
 
-    #print("Message float",floatMessage)
+        #print("Message float",floatMessage)
+        stopChek()
+    else:
+        asyncio.get_event_loop().stop()
 
+def stopChek():
+    if msgstop:
+        asyncio.get_event_loop().stop()
+    else:
+        return
 
 
 def the_gui():
@@ -59,6 +69,8 @@ def the_gui():
     while True:  # The Event Loop
         event, value = window.read()
         if event in (sg.WIN_CLOSED, 'Stop'):  # quit if exit button or X
+            global msgstop
+            msgstop=True
             break
 
         if event == 'Start':
@@ -66,10 +78,7 @@ def the_gui():
             print("Server started")
 
     window.close()
-    loop = asyncio.get_event_loop()
-    loop.call_soon_threadsafe(loop.stop)
     threadWebSocket.join()
-
 
 
 if __name__ == '__main__':
