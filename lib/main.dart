@@ -1,5 +1,5 @@
+import 'dart:convert';
 import 'dart:io';
-
 import 'package:web_socket_channel/web_socket_channel.dart';
 import 'package:flutter/material.dart';
 import 'package:sensors_plus/sensors_plus.dart';
@@ -44,10 +44,9 @@ class _MyHomePageState extends State<MyHomePage> {
   List<double>? _gyroscopeValues;
   List<double>? _magnetometerValues;
   final _streamSubscriptions = <StreamSubscription<dynamic>>[];
-  var mag1;
-  var isPressed;
-
-
+  dynamic isPressed;
+  late final response;
+  late final responsetest;
 
   @override
   Widget build(BuildContext context) {
@@ -60,7 +59,7 @@ class _MyHomePageState extends State<MyHomePage> {
         .toList();
     final magnetometer =
         _magnetometerValues?.map((double v) => v.toStringAsFixed(1)).toList();
-    mag1 = _magnetometerValues;
+
 
     return Scaffold(
       appBar: AppBar(
@@ -71,12 +70,6 @@ class _MyHomePageState extends State<MyHomePage> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Form(
-              child: TextFormField(
-                controller: _controller,
-                decoration: const InputDecoration(labelText: 'Send a message'),
-              ),
-            ),
             const SizedBox(height: 24),
             StreamBuilder(
               stream: _channel.stream,
@@ -122,6 +115,7 @@ class _MyHomePageState extends State<MyHomePage> {
             ),
             GestureDetector(
               onLongPressStart: (_) async {
+                _sendMessageCalibrate();
                 isPressed = true;
                 do {
                   //print('long pressing');
@@ -137,11 +131,15 @@ class _MyHomePageState extends State<MyHomePage> {
               ),
               onLongPressEnd: (_) => setState(() => isPressed = false),
             ),
+
           ],
         ),
       ),
-
-      // This trailing comma makes auto-formatting nicer for build methods.
+      floatingActionButton: FloatingActionButton(
+        onPressed: _sendMessageStop,
+        tooltip: 'Send server stop message',
+        child: const Icon(Icons.stop_screen_share_outlined),
+      ),
     );
   }
 
@@ -152,7 +150,14 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   void _sendMessage() {
-    _channel.sink.add(mag1.toString());
+    //_channel.sink.add(responsetest);
+    _channel.sink.add(response);
+  }
+  void _sendMessageStop(){
+    _channel.sink.add('stop');
+  }
+  void _sendMessageCalibrate(){
+    _channel.sink.add('calibrate');
   }
 
 
@@ -180,6 +185,7 @@ class _MyHomePageState extends State<MyHomePage> {
         (UserAccelerometerEvent event) {
           setState(() {
             _userAccelerometerValues = <double>[event.x, event.y, event.z];
+            response=json.encode({'x':event.x,'y':event.y,'z':event.z});
           });
         },
       ),
@@ -189,6 +195,8 @@ class _MyHomePageState extends State<MyHomePage> {
         (MagnetometerEvent event) {
           setState(() {
             _magnetometerValues = <double>[event.x, event.y, event.z];
+            responsetest=json.encode({'x':event.x,'y':event.y,'z':event.z});
+
           });
         },
       ),
