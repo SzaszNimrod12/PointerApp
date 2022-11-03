@@ -3,13 +3,12 @@ import os
 import threading
 import json
 import pyautogui as pyautogui
-from win32api import GetSystemMetrics
 
 import PySimpleGUI as sg
 import websockets
 
 msgstop = False
-
+screenWidth, screenHeight = pyautogui.size()
 
 def run():
     # must set a new loop for asyncio
@@ -31,21 +30,21 @@ async def listen(websocket):
 
 
 def mover(message):
-    if message != "stop":
+    if message != "stop" and message != "calibrate":
         response = json.loads(message)
-        xkord = int(response['x'])
-        ykord = int(response['y'])
-        zkord = int(response['z'])
-
+        xkord = float(response['x'])
+        ykord = float(response['y'])
+        # zkord = float(response['z'])
         # move mouse right down -left -up
 
-        if xkord != 0 and ykord != 0:
-            # move mouse right
-            pyautogui.move(GetSystemMetrics(0)+xkord, GetSystemMetrics(1)+ykord)
+        if -20.0 < xkord < 20.0 and -20.0 < ykord < 20.0:
+            xkordint = int(xkord * 100)
+            ykordint = int(ykord * 100)
+            pyautogui.move(xkordint,  ykordint)
 
         stopChek()
     elif message == "calibrate":
-        pyautogui.moveTo(GetSystemMetrics(0) / 2, GetSystemMetrics(1) / 2)
+        pyautogui.moveTo(screenWidth/2, screenHeight/2)
     else:
         asyncio.get_event_loop().stop()
 
