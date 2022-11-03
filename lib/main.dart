@@ -121,7 +121,7 @@ class _MyHomePageState extends State<MyHomePage> {
                   //print('long pressing');
                   _sendMessage();
                   //testeles milyat 1 masodperc kesleltetes van de lehet ez sokall kisebb.
-                  await Future.delayed(Duration(seconds: 1));
+                  await Future.delayed(const Duration(milliseconds: 100));
                 } while (isPressed);
               },
               child: Container(
