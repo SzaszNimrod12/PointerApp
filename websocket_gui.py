@@ -32,14 +32,18 @@ async def listen(websocket):
 def mover(message):
     if message != "stop" and message != "calibrate":
         response = json.loads(message)
-        xkord = float(response['x'])
-        ykord = float(response['y'])
+        xkord = float('%.2f' % response['x'])
+        ykord = float('%.2f' % response['y'])
+        print(xkord)
+        print(ykord)
         # zkord = float(response['z'])
         # move mouse right down -left -up
 
         if -20.0 < xkord < 20.0 and -20.0 < ykord < 20.0:
             xkordint = int(xkord * 100)
             ykordint = int(ykord * 100)
+            print(xkordint)
+            print(ykordint)
             pyautogui.move(xkordint,  ykordint)
 
         stopChek()
