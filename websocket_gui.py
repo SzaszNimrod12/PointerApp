@@ -3,12 +3,49 @@ import os
 import threading
 import json
 import pyautogui as pyautogui
-
 import PySimpleGUI as sg
 import websockets
 
 msgstop = False
 screenWidth, screenHeight = pyautogui.size()
+
+
+class MeasurementFilter:
+    def __init__(self, window_size):
+        self.windowSize = window_size
+        self.queue = []
+
+    def count(self):
+        return len(self.queue)
+
+    def empty(self):
+        return len(self.queue) == 0
+
+    def full(self):
+        return self.windowSize == len(self.queue)
+
+    def last(self):
+        return self.queue[-1]
+
+    def append(self, val):
+        self.queue.append(val)
+
+        if len(self.queue) > self.windowSize:
+            self.queue.pop(0)
+
+    def clear(self):
+        self.queue.clear()
+
+    def get_filtered(self):
+        if not self.full():
+            print('Not enough data')
+            return 0, 0
+
+        total = [sum(point) for point in zip(*self.queue)]
+
+        return total[0] / self.count(), \
+               total[1] / self.count()
+
 
 def run():
     # must set a new loop for asyncio
@@ -18,7 +55,6 @@ def run():
     loop.run_until_complete(websockets.serve(listen, "192.168.0.154", os.environ.get('PORT') or 8080))
     # keep thread running
     loop.run_forever()
-
 
 
 # listener
@@ -34,21 +70,24 @@ def mover(message):
         response = json.loads(message)
         xkord = float('%.2f' % response['x'])
         ykord = float('%.2f' % response['y'])
-        print(xkord)
-        print(ykord)
+        # print(xkord)
+        # print(ykord)
         # zkord = float(response['z'])
         # move mouse right down -left -up
 
         if -20.0 < xkord < 20.0 and -20.0 < ykord < 20.0:
             xkordint = int(xkord * 100)
             ykordint = int(ykord * 100)
-            print(xkordint)
-            print(ykordint)
-            pyautogui.move(xkordint,  ykordint)
+            # print(xkordint)
+            # print(ykordint)
+            position.append((xkordint, ykordint))
+            if position.full():
+                xfilter, yfilter = position.get_filtered()
+                pyautogui.move(xfilter, yfilter)
 
         stopChek()
     elif message == "calibrate":
-        pyautogui.moveTo(screenWidth/2, screenHeight/2)
+        pyautogui.moveTo(screenWidth / 2, screenHeight / 2)
     else:
         asyncio.get_event_loop().stop()
 
@@ -89,4 +128,5 @@ def the_gui():
 
 
 if __name__ == '__main__':
+    position = MeasurementFilter(window_size=5)
     the_gui()
