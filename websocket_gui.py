@@ -72,22 +72,27 @@ def mover(message):
         ykord = float('%.2f' % response['y'])
         # print(xkord)
         # print(ykord)
-        # zkord = float(response['z'])
+        # zkord = float('%.2f' % response['z'])
         # move mouse right down -left -up
 
-        if -20.0 < xkord < 20.0 and -20.0 < ykord < 20.0:
-            xkordint = int(xkord * 100)
-            ykordint = int(ykord * 100)
+        if -50.0 < xkord < 50.0 and -50.0 < ykord < 50.0:
+            xkordint = int(xkord * 10)
+            ykordint = int(ykord * 10)
             # print(xkordint)
             # print(ykordint)
             position.append((xkordint, ykordint))
             if position.full():
                 xfilter, yfilter = position.get_filtered()
-                pyautogui.move(xfilter, yfilter)
+                # xlast, ylast = lastpos.last()
+                # if xlast != xfilter and ylast != yfilter:
+                posx, posy = pyautogui.position()
+                pyautogui.moveTo(posx - xfilter, posy - yfilter)
+                # lastpos.append((xfilter, yfilter))
 
         stopChek()
     elif message == "calibrate":
         pyautogui.moveTo(screenWidth / 2, screenHeight / 2)
+        pyautogui.hotkey('ctrl', 'l')  # laser pointer
     else:
         asyncio.get_event_loop().stop()
 
@@ -129,4 +134,7 @@ def the_gui():
 
 if __name__ == '__main__':
     position = MeasurementFilter(window_size=5)
+    # lastpos = MeasurementFilter(window_size=1)
+    # lastpos.append((0, 0))
+
     the_gui()
