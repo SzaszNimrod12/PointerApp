@@ -1,4 +1,4 @@
-# websocket
+# PointerApp
 
 A new Flutter project.
 
