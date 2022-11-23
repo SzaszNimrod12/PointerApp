@@ -2,7 +2,7 @@
     package="com.example.websocket">
     <uses-permission android:name="android.permission.INTERNET" />
    <application
-        android:label="websocket"
+        android:label="PointerApp"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher">
         <activity
