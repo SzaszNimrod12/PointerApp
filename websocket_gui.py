@@ -5,6 +5,7 @@ import json
 import pyautogui as pyautogui
 import PySimpleGUI as sg
 import websockets
+import pydirectinput
 
 msgstop = False
 screenWidth, screenHeight = pyautogui.size()
@@ -112,7 +113,11 @@ def mover(response):
         if position.full():
             xfilter, yfilter = position.get_filtered()
             posx, posy = pyautogui.position()
-            pyautogui.moveTo(posx - xfilter, posy - yfilter)
+
+            # pyautogui.moveTo(posx - xfilter, posy - yfilter)
+
+            # ez csak windows-al kompatibilis
+            pydirectinput.moveTo(int(posx - xfilter), int(posy - yfilter))
 
 
 def stopChek():
