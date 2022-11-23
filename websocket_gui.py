@@ -61,40 +61,58 @@ def run():
 async def listen(websocket):
     async for message in websocket:
         print("Received and echoing message: " + message, flush=True)
-        mover(message)
+        messageCheck(message)
+
+        # viszakuldeni sem muszaly tesztelese erdekeben van itt
         await websocket.send(message)
 
 
-def mover(message):
-    if message != "stop" and message != "calibrate":
-        response = json.loads(message)
-        xkord = float('%.2f' % response['x'])
-        ykord = float('%.2f' % response['y'])
-        # print(xkord)
-        # print(ykord)
-        # zkord = float('%.2f' % response['z'])
-        # move mouse right down -left -up
+def messageCheck(message):
+    stopChek()
+    response = json.loads(message)
+    if response['type'] == 'actions':
+        if response['action'] == 'calibrate':
+            pyautogui.moveTo(screenWidth / 2, screenHeight / 2)  # move mouse to the center of screen
 
-        if -50.0 < xkord < 50.0 and -50.0 < ykord < 50.0:
-            xkordint = int(xkord * 10)
-            ykordint = int(ykord * 10)
-            # print(xkordint)
-            # print(ykordint)
-            position.append((xkordint, ykordint))
-            if position.full():
-                xfilter, yfilter = position.get_filtered()
-                # xlast, ylast = lastpos.last()
-                # if xlast != xfilter and ylast != yfilter:
-                posx, posy = pyautogui.position()
-                pyautogui.moveTo(posx - xfilter, posy - yfilter)
-                # lastpos.append((xfilter, yfilter))
+        if response['action'] == 'startLaserPointer' or response['action'] == 'stopLaserPointer':
+            pyautogui.hotkey('ctrl', 'l')  # laser pointer
 
-        stopChek()
-    elif message == "calibrate":
-        pyautogui.moveTo(screenWidth / 2, screenHeight / 2)
-        pyautogui.hotkey('ctrl', 'l')  # laser pointer
-    else:
-        asyncio.get_event_loop().stop()
+        if response['action'] == 'startDraw':
+            pyautogui.hotkey('ctrl', 'p')  # draw with pen
+            pyautogui.mouseDown(button='left')
+
+        if response['action'] == 'stopDraw':
+            pyautogui.hotkey('ctrl', 'p')  # draw with pen
+            pyautogui.mouseUp(button='left')
+
+        elif response['action'] == 'stop':
+            asyncio.get_event_loop().stop()
+
+    if response['type'] == 'points':
+        mover(response)
+
+
+def mover(response):
+    xkord = float('%.2f' % response['x'])
+    ykord = float('%.2f' % response['y'])
+
+    # print(xkord)
+    # print(ykord)
+    # zkord = float('%.2f' % response['z'])
+    # move mouse right down -left -up
+
+    if -50.0 < xkord < 50.0 and -50.0 < ykord < 50.0:
+        xkordint = int(xkord * 10)
+        ykordint = int(ykord * 10)
+
+        # print(xkordint)
+        # print(ykordint)
+
+        position.append((xkordint, ykordint))
+        if position.full():
+            xfilter, yfilter = position.get_filtered()
+            posx, posy = pyautogui.position()
+            pyautogui.moveTo(posx - xfilter, posy - yfilter)
 
 
 def stopChek():
@@ -109,8 +127,8 @@ def the_gui():
 
     layout = [[sg.Text('Output Text', size=(40, 1))],
               [sg.Output(size=(110, 20), font=('Helvetica 10')),
-               sg.Button('Start', button_color=(sg.BLUES[0]), bind_return_key=True),
-               sg.Button('Stop', button_color=(sg.GREENS[0]))]]
+               sg.Button('Start', button_color=('black', 'darkslateblue'), bind_return_key=True),
+               sg.Button('Stop', button_color=('black', 'firebrick'))]]
 
     window = sg.Window("Websocket Server", layout, font=('Helvetica', ' 13'), default_button_element_size=(8, 2),
                        use_default_focus=False, finalize=True)
@@ -134,7 +152,4 @@ def the_gui():
 
 if __name__ == '__main__':
     position = MeasurementFilter(window_size=5)
-    # lastpos = MeasurementFilter(window_size=1)
-    # lastpos.append((0, 0))
-
     the_gui()
