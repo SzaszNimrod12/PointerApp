@@ -83,8 +83,8 @@ def messageCheck(message):
             pyautogui.mouseDown(button='left')
 
         if response['action'] == 'stopDraw':
-            pyautogui.hotkey('ctrl', 'p')  # draw with pen
             pyautogui.mouseUp(button='left')
+            pyautogui.hotkey('ctrl', 'p')  # draw with pen
 
         elif response['action'] == 'stop':
             asyncio.get_event_loop().stop()
@@ -114,7 +114,8 @@ def mover(response):
             xfilter, yfilter = position.get_filtered()
             posx, posy = pyautogui.position()
 
-            # pyautogui.moveTo(posx - xfilter, posy - yfilter)
+            # ezel nem mukodik a rajz  de minden os kompatibilis
+            #pyautogui.moveTo(posx - xfilter, posy - yfilter)
 
             # ez csak windows-al kompatibilis
             pydirectinput.moveTo(int(posx - xfilter), int(posy - yfilter))
