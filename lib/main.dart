@@ -107,7 +107,6 @@ class _MyHomePageState extends State<MyHomePage> {
               padding: const EdgeInsets.fromLTRB(20, 20, 20, 20),
               child: GestureDetector(
                   onLongPressStart: (_) async {
-                    _sendMessageCalibrate();
                     _sendMessageStartDraw();
                     isPressed = true;
                     do {
