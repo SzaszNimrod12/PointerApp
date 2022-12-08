@@ -6,6 +6,9 @@ import pyautogui as pyautogui
 import PySimpleGUI as sg
 import websockets
 import pydirectinput
+import socket
+import qrcode
+from PIL import Image
 
 msgstop = False
 screenWidth, screenHeight = pyautogui.size()
@@ -53,7 +56,20 @@ def run():
     loop = asyncio.new_event_loop()
     asyncio.set_event_loop(loop)
     # setup a server
-    loop.run_until_complete(websockets.serve(listen, "192.168.0.154", os.environ.get('PORT') or 8080))
+
+    # nem mindenkinel a [3] elembe lessz a Wi-Fi ip attol fug hany network portja van lehet ez is configba hogy
+    # hanyadik  network portot kell  megadni
+    ip_address = (socket.gethostbyname_ex(socket.gethostname())[2][3])
+    # print(ip_address)
+    port = os.environ.get('PORT') or 8080
+    port = str(port)
+
+    # generate qr code
+    img = qrcode.make(ip_address + ":" + port)
+    type(img)  # qrcode.image.pil.PilImage
+    img.save("connect_qrcode.png")
+
+    loop.run_until_complete(websockets.serve(listen, ip_address, port))
     # keep thread running
     loop.run_forever()
 
@@ -115,7 +131,7 @@ def mover(response):
             posx, posy = pyautogui.position()
 
             # ezel nem mukodik a rajz  de minden os kompatibilis
-            #pyautogui.moveTo(posx - xfilter, posy - yfilter)
+            # pyautogui.moveTo(posx - xfilter, posy - yfilter)
 
             # ez csak windows-al kompatibilis
             pydirectinput.moveTo(int(posx - xfilter), int(posy - yfilter))
@@ -134,7 +150,8 @@ def the_gui():
     layout = [[sg.Text('Output Text', size=(40, 1))],
               [sg.Output(size=(110, 20), font=('Helvetica 10')),
                sg.Button('Start', button_color=('black', 'darkslateblue'), bind_return_key=True),
-               sg.Button('Stop', button_color=('black', 'firebrick'))]]
+               sg.Button('Stop', button_color=('black', 'firebrick'))],
+              [sg.Button('Open QR Code', button_color=('black', 'azure4'))]]
 
     window = sg.Window("Websocket Server", layout, font=('Helvetica', ' 13'), default_button_element_size=(8, 2),
                        use_default_focus=False, finalize=True)
@@ -151,6 +168,10 @@ def the_gui():
         if event == 'Start':
             threadWebSocket.start()
             print("Server started")
+
+        if event == 'Open QR Code':
+            im = Image.open("connect_qrcode.png")
+            im.show()
 
     window.close()
     threadWebSocket.join()
