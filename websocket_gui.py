@@ -57,10 +57,19 @@ def run():
     asyncio.set_event_loop(loop)
     # setup a server
 
+    # Elso megoldas
+
     # nem mindenkinel a [3] elembe lessz a Wi-Fi ip attol fug hany network portja van lehet ez is configba hogy
     # hanyadik  network portot kell  megadni
-    ip_address = (socket.gethostbyname_ex(socket.gethostname())[2][3])
+    # ip_address = (socket.gethostbyname_ex(socket.gethostname())[2][2])
     # print(ip_address)
+
+    # Ez talan jobb
+    s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+    s.connect(("8.8.8.8", 80))
+    print(s.getsockname()[0])
+    ip_address = s.getsockname()[0]
+
     port = os.environ.get('PORT') or 8080
     port = str(port)
 
