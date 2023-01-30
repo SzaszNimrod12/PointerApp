@@ -1,21 +1,19 @@
 import 'dart:convert';
 import 'dart:io';
-import 'package:qr_code_scanner/qr_code_scanner.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
 import 'package:flutter/material.dart';
 import 'package:sensors_plus/sensors_plus.dart';
 import 'dart:async';
 import 'dart:developer';
+import 'package:websocket/main.dart';
 
 class PointerController extends StatefulWidget {
   const PointerController({
     super.key,
     required this.title,
-    required this.result,
   });
 
   final String title;
-  final Barcode? result;
 
   @override
   _PointerControllerState createState() => _PointerControllerState();
@@ -24,8 +22,8 @@ class PointerController extends StatefulWidget {
 class _PointerControllerState extends State<PointerController> {
   final TextEditingController _controller = TextEditingController();
   final _channel = WebSocketChannel.connect(
-    Uri.parse('ws://192.168.0.154:8080'),
-    //Uri.parse(),
+    //Uri.parse('ws://192.168.0.154:8080'),
+    Uri.parse('ws://$resultUri'),
   );
   List<double>? _accelerometerValues;
   final _streamSubscriptions = <StreamSubscription<dynamic>>[];

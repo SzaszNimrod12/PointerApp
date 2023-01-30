@@ -3,6 +3,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:qr_code_scanner/qr_code_scanner.dart';
 import 'package:websocket/PointerController.dart';
+import 'main.dart';
 
 class QRCodeScan extends StatefulWidget {
   const QRCodeScan({
@@ -53,21 +54,9 @@ class _QRCodeScanState extends State<QRCodeScan> {
             flex: 1,
             child: GestureDetector(
               onTap: () {
-
-
-                //if (result != null) {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => PointerController(
-                      title: "Pointer App",
-                      result: result,
-                    ),
-                  ),
-                );
-                //}
-
-
+                if (result != null) {
+                  Navigator.pushNamed(context, '/PointerController');
+                }
               },
               child: Container(
                 child: Row(
@@ -98,6 +87,7 @@ class _QRCodeScanState extends State<QRCodeScan> {
     controller.scannedDataStream.listen((scanData) {
       setState(() {
         result = scanData;
+        resultUri='${result!.code}';
       });
     });
     controller.pauseCamera();
