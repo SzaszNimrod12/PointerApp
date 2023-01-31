@@ -67,7 +67,7 @@ def run():
     # Ez talan jobb
     s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
     s.connect(("8.8.8.8", 80))
-    print(s.getsockname()[0])
+    # print(s.getsockname()[0])
     ip_address = s.getsockname()[0]
 
     port = os.environ.get('PORT') or 8080
@@ -110,6 +110,12 @@ def messageCheck(message):
         if response['action'] == 'stopDraw':
             pyautogui.mouseUp(button='left')
             pyautogui.hotkey('ctrl', 'p')  # draw with pen
+
+        if response['action'] == 'pressLeft':
+            pyautogui.press('left')        # press left arrow key
+
+        if response['action'] == 'pressRight':
+            pyautogui.press('right')       # press right arrow key
 
         elif response['action'] == 'stop':
             asyncio.get_event_loop().stop()
