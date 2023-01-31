@@ -65,12 +65,14 @@ class _QRCodeScanState extends State<QRCodeScan> {
                     if (result != null)
                       Text('Data: ${result!.code}',
                           style: const TextStyle(
-                            fontSize: 20.0,
+                            fontSize: 25.0,
+                            color: Colors.blue,
                           ))
                     else
                       const Text('Scan a code',
                           style: TextStyle(
-                            fontSize: 20.0,
+                            fontSize: 25.0,
+                            color: Colors.blue,
                           )),
                   ],
                 ),

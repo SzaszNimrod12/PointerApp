@@ -19,13 +19,13 @@ class HomeScreen extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               Padding(
-                padding: const EdgeInsets.all(10.0),
+                padding: const EdgeInsets.fromLTRB(25, 50, 25, 150),
                 child: Text(
                   title,
                   style: const TextStyle(
-                    fontSize: 30.0,
-                    color: Colors.blue,
-                  ),
+                      fontSize: 50.0,
+                      color: Colors.black,
+                      fontWeight: FontWeight.bold),
                 ),
               ),
               Padding(
@@ -38,9 +38,14 @@ class HomeScreen extends StatelessWidget {
                     onPressed: () {
                       Navigator.pushNamed(context, '/QRCodeScan');
                     },
-                    minWidth: 120.0,
-                    height: 42.0,
-                    child: const Text("Scan QR Code"),
+                    minWidth: 250.0,
+                    height: 142.0,
+                    child: const Text(
+                      "Scan QR Code",
+                      style: TextStyle(
+                        fontSize: 25,
+                      ),
+                    ),
                   ),
                 ),
               ),

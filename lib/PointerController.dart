@@ -33,7 +33,7 @@ class _PointerControllerState extends State<PointerController> {
   @override
   Widget build(BuildContext context) {
     final accelerometer =
-    _accelerometerValues?.map((double v) => v.toStringAsFixed(1)).toList();
+        _accelerometerValues?.map((double v) => v.toStringAsFixed(1)).toList();
 
     return Scaffold(
       appBar: AppBar(
@@ -44,7 +44,7 @@ class _PointerControllerState extends State<PointerController> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            const SizedBox(height: 5),
+            const SizedBox(height: 10),
             StreamBuilder(
               stream: _channel.stream,
               builder: (context, snapshot) {
@@ -52,7 +52,7 @@ class _PointerControllerState extends State<PointerController> {
               },
             ),
             Padding(
-              padding: const EdgeInsets.all(5.0),
+              padding: const EdgeInsets.all(15.0),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: <Widget>[
@@ -79,13 +79,19 @@ class _PointerControllerState extends State<PointerController> {
                     height: 150,
                     color: Colors.blue,
                     padding: const EdgeInsets.all(12),
-                    child: const Center(child: Text("Laser Pointer")),
+                    child: const Center(
+                        child: Text(
+                      "Laser Pointer",
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 15,
+                      ),
+                    )),
                   ),
-                  onLongPressEnd: (_){
+                  onLongPressEnd: (_) {
                     _sendMessageStopLaserPointer();
                     setState(() => isPressed = false);
-                  }
-              ),
+                  }),
             ),
             Padding(
               padding: const EdgeInsets.fromLTRB(20, 20, 20, 20),
@@ -103,12 +109,72 @@ class _PointerControllerState extends State<PointerController> {
                     height: 150,
                     color: Colors.blue,
                     padding: const EdgeInsets.all(12),
-                    child: const Center(child: Text("Draw")),
+                    child: const Center(
+                        child: Text(
+                      "Draw",
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 15,
+                      ),
+                    )),
                   ),
-                  onLongPressEnd: (_){
+                  onLongPressEnd: (_) {
                     _sendMessageStopDraw();
                     setState(() => isPressed = false);
-                  }
+                  }),
+            ),
+            Padding(
+              padding: const EdgeInsets.fromLTRB(0,25,0,10),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: ElevatedButton.icon(
+                      onPressed: () {
+                        _sendMessageLeftKey();
+                      },
+                      icon: const Icon(Icons.navigate_before_rounded, size: 25),
+                      label: const Text(
+                        "Previous slide",
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.blue,
+                        minimumSize: const Size(150, 50),
+                      ),
+                    ),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: ElevatedButton(
+                      onPressed: () {
+                        _sendMessageRightKey();
+                      },
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.blue,
+                        minimumSize: const Size(150, 50),
+                      ),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: const [
+                          Text(
+                            "Next slide",
+                            style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                          Padding(
+                            padding: EdgeInsets.fromLTRB(6, 0, 0, 0),
+                            child: Icon(Icons.navigate_next_rounded, size: 25),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ],
               ),
             ),
           ],
@@ -118,7 +184,7 @@ class _PointerControllerState extends State<PointerController> {
         onPressed: _sendMessageStop,
         tooltip: 'Send server stop message',
         backgroundColor: Colors.blue,
-        child: const Icon(Icons.stop_screen_share_outlined),
+        child: const Icon(Icons.stop_screen_share_outlined,color: Colors.white,),
       ),
     );
   }
@@ -132,38 +198,61 @@ class _PointerControllerState extends State<PointerController> {
   void _sendMessage() {
     _channel.sink.add(response);
   }
-  void _sendMessageStop(){
-    var responseAction=json.encode({'type':'actions','action':'stop'});
+
+  void _sendMessageStop() {
+    var responseAction = json.encode({'type': 'actions', 'action': 'stop'});
     _channel.sink.add(responseAction);
   }
-  void _sendMessageCalibrate(){
-    var responseAction=json.encode({'type':'actions','action':'calibrate'});
+
+  void _sendMessageCalibrate() {
+    var responseAction =
+        json.encode({'type': 'actions', 'action': 'calibrate'});
     _channel.sink.add(responseAction);
   }
-  void _sendMessageStopLaserPointer(){
-    var responseAction=json.encode({'type':'actions','action':'stopLaserPointer'});
+
+  void _sendMessageStopLaserPointer() {
+    var responseAction =
+        json.encode({'type': 'actions', 'action': 'stopLaserPointer'});
     _channel.sink.add(responseAction);
   }
-  void _sendMessageStartLaserPointer(){
-    var responseAction=json.encode({'type':'actions','action':'startLaserPointer'});
+
+  void _sendMessageStartLaserPointer() {
+    var responseAction =
+        json.encode({'type': 'actions', 'action': 'startLaserPointer'});
     _channel.sink.add(responseAction);
   }
-  void _sendMessageStopDraw(){
-    var responseAction=json.encode({'type':'actions','action':'stopDraw'});
+
+  void _sendMessageStopDraw() {
+    var responseAction = json.encode({'type': 'actions', 'action': 'stopDraw'});
     _channel.sink.add(responseAction);
   }
-  void _sendMessageStartDraw(){
-    var responseAction=json.encode({'type':'actions','action':'startDraw'});
+
+  void _sendMessageStartDraw() {
+    var responseAction =
+        json.encode({'type': 'actions', 'action': 'startDraw'});
+    _channel.sink.add(responseAction);
+  }
+
+  void _sendMessageLeftKey() {
+    var responseAction =
+        json.encode({'type': 'actions', 'action': 'pressLeft'});
+    _channel.sink.add(responseAction);
+  }
+
+  void _sendMessageRightKey() {
+    var responseAction =
+        json.encode({'type': 'actions', 'action': 'pressRight'});
     _channel.sink.add(responseAction);
   }
 
   void lisenSensorData() {
     _streamSubscriptions.add(
       accelerometerEvents.listen(
-            (AccelerometerEvent event) {
+        (AccelerometerEvent event) {
           setState(() {
             _accelerometerValues = <double>[event.x, event.y, event.z];
-            response=json.encode({'type':'points','x':event.x,'y':event.y,'z':event.z});
+            response = json.encode(
+                {'type': 'points', 'x': event.x, 'y': event.y, 'z': event.z});
           });
         },
       ),
