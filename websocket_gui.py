@@ -51,32 +51,34 @@ class MeasurementFilter:
                total[1] / self.count()
 
 
+def ipGenerate():
+    s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+    s.connect(("8.8.8.8", 80))
+    # print(s.getsockname()[0])
+    ip_address = s.getsockname()[0]  # get ip address
+
+    port = os.environ.get('PORT') or 8080
+    port = str(port)
+    return ip_address, port
+
+
+def qrcodeGenerate(ip_address, port):
+    img = qrcode.make(ip_address + ":" + port)
+    type(img)  # qrcode.image.pil.PilImage
+    img.save("connect_qrcode.png")
+
+
 def run():
     # must set a new loop for asyncio
     loop = asyncio.new_event_loop()
     asyncio.set_event_loop(loop)
     # setup a server
 
-    # Elso megoldas
-
-    # nem mindenkinel a [3] elembe lessz a Wi-Fi ip attol fug hany network portja van lehet ez is configba hogy
-    # hanyadik  network portot kell  megadni
-    # ip_address = (socket.gethostbyname_ex(socket.gethostname())[2][2])
-    # print(ip_address)
-
-    # Ez talan jobb
-    s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-    s.connect(("8.8.8.8", 80))
-    # print(s.getsockname()[0])
-    ip_address = s.getsockname()[0]
-
-    port = os.environ.get('PORT') or 8080
-    port = str(port)
+    # get ip
+    ip_address, port = ipGenerate()
 
     # generate qr code
-    img = qrcode.make(ip_address + ":" + port)
-    type(img)  # qrcode.image.pil.PilImage
-    img.save("connect_qrcode.png")
+    qrcodeGenerate(ip_address, port)
 
     loop.run_until_complete(websockets.serve(listen, ip_address, port))
     # keep thread running
@@ -112,10 +114,10 @@ def messageCheck(message):
             pyautogui.hotkey('ctrl', 'p')  # draw with pen
 
         if response['action'] == 'pressLeft':
-            pyautogui.press('left')        # press left arrow key
+            pyautogui.press('left')  # press left arrow key
 
         if response['action'] == 'pressRight':
-            pyautogui.press('right')       # press right arrow key
+            pyautogui.press('right')  # press right arrow key
 
         elif response['action'] == 'stop':
             asyncio.get_event_loop().stop()
