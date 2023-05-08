@@ -54,7 +54,6 @@ class MeasurementFilter:
 def ipGenerate():
     s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
     s.connect(("8.8.8.8", 80))
-    # print(s.getsockname()[0])
     ip_address = s.getsockname()[0]  # get ip address
 
     port = os.environ.get('PORT') or 8080
@@ -173,17 +172,16 @@ def the_gui():
     window = sg.Window("Websocket Server", layout, font=('Helvetica', ' 13'), default_button_element_size=(8, 2),
                        use_default_focus=False, finalize=True)
 
-    threadWebSocket = threading.Thread(target=run)
-
     while True:  # The Event Loop
         event, value = window.read()
         if event in (sg.WIN_CLOSED, 'Stop'):  # quit if exit button or X
             global msgstop
             msgstop = True
+            asyncio.get_event_loop().stop()
             break
 
         if event == 'Start':
-            threadWebSocket.start()
+            threading.Thread(target=run, daemon=True).start()
             print("Server started")
 
         if event == 'Open QR Code':
@@ -191,7 +189,6 @@ def the_gui():
             im.show()
 
     window.close()
-    threadWebSocket.join()
 
 
 if __name__ == '__main__':
