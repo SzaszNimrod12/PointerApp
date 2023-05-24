@@ -10,7 +10,6 @@ import socket
 import qrcode
 from PIL import Image
 
-msgstop = False
 screenWidth, screenHeight = pyautogui.size()
 
 
@@ -90,12 +89,11 @@ async def listen(websocket):
         print("Received and echoing message: " + message, flush=True)
         messageCheck(message)
 
-        # viszakuldeni sem muszaly tesztelese erdekeben van itt
-        await websocket.send(message)
+        # viszakuldeni sem muszaly teszteles erdekeben van itt
+        # await websocket.send(message)
 
 
 def messageCheck(message):
-    stopChek()
     response = json.loads(message)
     if response['type'] == 'actions':
         if response['action'] == 'calibrate':
@@ -153,19 +151,12 @@ def mover(response):
             pydirectinput.moveTo(int(posx - xfilter), int(posy - yfilter))
 
 
-def stopChek():
-    if msgstop:
-        asyncio.get_event_loop().stop()
-    else:
-        return
-
-
 def the_gui():
     sg.theme('Black')  # give our window a spiffy set of colors
 
     layout = [[sg.Text('Output Text', size=(40, 1))],
               [sg.Output(size=(110, 20), font=('Helvetica 10')),
-               sg.Button('Start', button_color=('black', 'darkslateblue'), bind_return_key=True),
+               sg.Button('Start', button_color=('black', 'darkslateblue')),
                sg.Button('Stop', button_color=('black', 'firebrick'))],
               [sg.Button('Open QR Code', button_color=('black', 'azure4'))]]
 
@@ -175,8 +166,6 @@ def the_gui():
     while True:  # The Event Loop
         event, value = window.read()
         if event in (sg.WIN_CLOSED, 'Stop'):  # quit if exit button or X
-            global msgstop
-            msgstop = True
             asyncio.get_event_loop().stop()
             break
 
