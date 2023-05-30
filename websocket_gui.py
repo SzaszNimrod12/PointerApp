@@ -55,7 +55,7 @@ def ipGenerate():
     s.connect(("8.8.8.8", 80))
     ip_address = s.getsockname()[0]  # get ip address
 
-    port = os.environ.get('PORT') or 8080
+    port = os.environ.get('PORT', 8080)
     port = str(port)
     return ip_address, port
 
@@ -86,11 +86,11 @@ def run():
 # listener
 async def listen(websocket):
     async for message in websocket:
-        print("Received and echoing message: " + message, flush=True)
+        print("Received message: " + message, flush=True)
         messageCheck(message)
 
         # viszakuldeni sem muszaly teszteles erdekeben van itt
-        # await websocket.send(message)
+        #await websocket.send(message)
 
 
 def messageCheck(message):
@@ -132,9 +132,14 @@ def mover(response):
     # zkord = float('%.2f' % response['z'])
     # move mouse right down -left -up
 
-    if -50.0 < xkord < 50.0 and -50.0 < ykord < 50.0:
-        xkordint = int(xkord * 10)
-        ykordint = int(ykord * 10)
+    if -15.0 < xkord < 15.0 and -15.0 < ykord < 15.0:
+
+        if -7.0 < xkord < 7.0 and -7.0 < ykord < 7.0:
+            xkordint = int(xkord * 5)
+            ykordint = int(ykord * 5)
+        else:
+            xkordint = int(xkord * 8)
+            ykordint = int(ykord * 8)
 
         # print(xkordint)
         # print(ykordint)
@@ -181,5 +186,5 @@ def the_gui():
 
 
 if __name__ == '__main__':
-    position = MeasurementFilter(window_size=5)
+    position = MeasurementFilter(window_size=3)
     the_gui()
