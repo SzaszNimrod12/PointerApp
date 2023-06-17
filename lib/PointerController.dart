@@ -22,7 +22,6 @@ class PointerController extends StatefulWidget {
 class _PointerControllerState extends State<PointerController> {
   final TextEditingController _controller = TextEditingController();
   final _channel = WebSocketChannel.connect(
-    //Uri.parse('ws://192.168.0.154:8080'),
     Uri.parse('ws://$resultUri'),
   );
   List<double>? _accelerometerValues;
@@ -68,9 +67,7 @@ class _PointerControllerState extends State<PointerController> {
                     _sendMessageStartLaserPointer();
                     isPressed = true;
                     do {
-                      //print('long pressing');
                       _sendMessage();
-                      //testeles milyat 1 masodperc kesleltetes van de lehet ez sokall kisebb.
                       await Future.delayed(const Duration(milliseconds: 100));
                     } while (isPressed);
                   },

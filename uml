@@ -1,0 +1,72 @@
+@startuml
+set namespaceSeparator ::
+
+class "websocket::HomeScreen.dart::HomeScreen" {
+  +String title
+  +Widget build()
+}
+
+"flutter::src::widgets::framework.dart::StatelessWidget" <|-- "websocket::HomeScreen.dart::HomeScreen"
+
+class "websocket::main.dart::MyApp" {
+  +Widget build()
+}
+
+"flutter::src::widgets::framework.dart::StatelessWidget" <|-- "websocket::main.dart::MyApp"
+
+class "websocket::PointerController.dart::PointerController" {
+  +String title
+  +_PointerControllerState createState()
+}
+
+"flutter::src::widgets::framework.dart::StatefulWidget" <|-- "websocket::PointerController.dart::PointerController"
+
+class "websocket::PointerController.dart::_PointerControllerState" {
+  -TextEditingController _controller
+  -WebSocketChannel _channel
+  -List<double>? _accelerometerValues
+  -List<StreamSubscription<dynamic>> _streamSubscriptions
+  +dynamic isPressed
+  +dynamic response
+  +Widget build()
+  +void initState()
+  -void _sendMessage()
+  -void _sendMessageStop()
+  -void _sendMessageCalibrate()
+  -void _sendMessageStopLaserPointer()
+  -void _sendMessageStartLaserPointer()
+  -void _sendMessageStopDraw()
+  -void _sendMessageStartDraw()
+  -void _sendMessageLeftKey()
+  -void _sendMessageRightKey()
+  +void lisenSensorData()
+  +void dispose()
+}
+
+"websocket::PointerController.dart::_PointerControllerState" o-- "flutter::src::widgets::editable_text.dart::TextEditingController"
+"websocket::PointerController.dart::_PointerControllerState" o-- "web_socket_channel::src::channel.dart::WebSocketChannel"
+"flutter::src::widgets::framework.dart::State" <|-- "websocket::PointerController.dart::_PointerControllerState"
+
+class "websocket::QRCodeScan.dart::QRCodeScan" {
+  +_QRCodeScanState createState()
+}
+
+"flutter::src::widgets::framework.dart::StatefulWidget" <|-- "websocket::QRCodeScan.dart::QRCodeScan"
+
+class "websocket::QRCodeScan.dart::_QRCodeScanState" {
+  +GlobalKey<State<StatefulWidget>> qrKey
+  +Barcode? result
+  +QRViewController? controller
+  +void reassemble()
+  +Widget build()
+  -void _onQRViewCreated()
+  +void dispose()
+}
+
+"websocket::QRCodeScan.dart::_QRCodeScanState" o-- "flutter::src::widgets::framework.dart::GlobalKey<State<StatefulWidget>>"
+"websocket::QRCodeScan.dart::_QRCodeScanState" o-- "qr_code_scanner::src::types::barcode.dart::Barcode"
+"websocket::QRCodeScan.dart::_QRCodeScanState" o-- "qr_code_scanner::src::qr_code_scanner.dart::QRViewController"
+"flutter::src::widgets::framework.dart::State" <|-- "websocket::QRCodeScan.dart::_QRCodeScanState"
+
+
+@enduml

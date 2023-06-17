@@ -1,6 +1,5 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
-import 'package:qr_code_scanner/qr_code_scanner.dart';
 import 'PointerController.dart';
 import 'QRCodeScan.dart';
 import 'HomeScreen.dart';
